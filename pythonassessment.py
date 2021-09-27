@@ -102,6 +102,8 @@ def phone():
             print("That is not a valid answer, please try again and make sure to enter y/n \n")
             phone_num = str(get_int("What is the customers Phone number? \n>>> "))  
             continue
+
+        
 #Defines the p_function function which handles the ordering of the pizzas
 def p_function():
     global p_max
