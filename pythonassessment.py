@@ -142,32 +142,31 @@ def p_function():
             break
     p_amount = int(get_int("How many {} pizzas do you want [max 5]\n>>>".format(pizzalist[p_order - 1])))
     print("You have added {} {} pizzas ".format(p_amount, pizzalist[p_order - 1]))
+    if p_order >= 1 and p_order <= 7:
+        price += 8.50 * p_amount
+    elif p_order >= 8 and p_order <= 12:
+        price += 13.50 * p_amount
     p_topping = input("Would you like extra toppings for this pizza?[y/n]\n>>> ")
-    while True:
-        if p_topping.lower() in yeslist:
-            print("""Extra toppings are 50 cents and the choices are below.
+    if p_topping.lower() in yeslist:
+        print("""Extra toppings are 50 cents and the choices are below.
 [1] Jalapenos                        |      [4] Mushroom
 [2] Olives                           |      [5] Extra Cheese
 [3] Pineapples                       |      [6] Ham
 \n""")
-            topping_choice = int(get_int("Please select the corresponding number next to the topping you want\n>>> "))
-            while True:
-                if topping_choice > 6:
-                    print("We do not have a topping associated with that number, please enter a number between 1 and 12")
-                    topping_choice = int(get_int("Please select the corresponding number to the topping you want\n>>>"))
-                    continue
-                elif topping_choice < 1:
-                    print("We do not have a pizza associated with that number, please enter a number between 1 and 12")
-                    topping_choice = int(get_int("Please select the corresponding number to the topping you want\n>>>"))
-                    continue
-                else:
-                    break
-        elif p_topping.lower() in nolist:
-            print("Ok!")
-            break
-        else:
-            p_topping = input("Sorry that is not a valid answer. Please enter [y/n] below\n>>>")
-            continue
+        topping_choice = int(get_int("Please select the corresponding number next to the topping you want\n>>> "))
+        while True:
+            if topping_choice >=1 and topping_choice <= 6:
+                price += 0.5*p_amount
+                break
+            else:
+                print("We do not have a pizza associated with that number, please enter a number between 1 and 12")
+                topping_choice = int(get_int("Please select the corresponding number to the topping you want\n>>>"))
+                continue
+    elif p_topping.lower() in nolist:
+        print("Ok!")
+    else:
+        p_topping = input("Sorry that is not a valid answer. Please enter [y/n] below\n>>>")
+
     p_check += p_amount
     if p_check > 5:
         print("You are only allowed to have a total of 5 pizzas, your order has been removed for that pizza.")
@@ -201,6 +200,10 @@ def pizza_order():
             print("You can not pick a negative number of pizzas sorry!\n")
             p_function()
             continue
+        elif p_amount == 5:
+            print("you have reached the limit for pizzas")
+            finalise()
+            break
         else:
             if p_amount < 5:
                 p_cont = input("Would you like to order another pizza?[y/n]\n>>> ")
@@ -208,14 +211,32 @@ def pizza_order():
                     p_function()
                     continue
                 elif p_cont in nolist:
+                    finalise()
                     break
                 else:
                     print("Invalid input, please try again.")
                     continue
             else:
-                print("You have reached the end of your order!\n") #give them an option to cancel the order
-                break
+                finalise()
 
+
+def finalise():
+    print("You have reached the end of your order!\n")
+    cancel = str(input("Would you like to finalise the order[F] or cancel[C]? (cancelling will bring you back to the start of the program)\n"))
+    while True:
+        if cancel.lower() == "f":
+            print("Thank you for using this program, a receipt will be printed below")
+            break
+        elif cancel.lower() == "c":
+            print("Your order has been cancelled.")
+            restart()
+        else:
+            print("Please enter F to finalise the order or C to cancel the order")
+            cancel = str(input(">>>"))
+            continue
+
+def receipt():
+    print
 
 def restart():
     global price
