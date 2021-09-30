@@ -237,25 +237,26 @@ def pizza_order():
                         price += 13.50 * p_amount
                     toppings()
                     break
-    while True:
-        if p_max == 5:
-            print("you have reached the limit for pizzas")
-            finalise()
-            break
-        else:
-            if p_amount < 5:
-                p_cont = input("Would you like to order another pizza?[y/n]\n>>> ")
-                if p_cont in yeslist:
-                    p_function()
-                    continue
-                elif p_cont in nolist:
+        while True:
+            if p_max == 5:
+                print("you have reached the limit for pizzas")
+                finalise()
+                break
+            else:
+                if p_amount < 5:
+                    p_cont = input("Would you like to order another pizza?[y/n]\n>>> ")
+                    if p_cont in yeslist:
+                        p_function()
+                        continue
+                    elif p_cont in nolist:
+                        finalise()
+                        break
+                    else:
+                        print("Invalid input, please try again.")
+                        continue
+                else:
                     finalise()
                     break
-                else:
-                    print("Invalid input, please try again.")
-                    continue
-            else:
-                finalise()
 
 
 def finalise():
