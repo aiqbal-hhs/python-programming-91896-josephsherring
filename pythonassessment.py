@@ -1,7 +1,7 @@
 import sys
 #Allows the program to know that these all mean the same thing
 yeslist = ["yea", "yes", "y", "yeah", "ok", "yep"]
-nolist = ["no,", "n"]
+nolist = ["no", "n"]
 #Sets the price and pizza orders to 0
 price = 0
 p_max = 0
@@ -24,37 +24,33 @@ def get_int(prompt):
 
 def get_yesno(prompt):
     while True:
-        try:
-            answer = str(input(prompt))
-            break
-        except not yeslist or nolist:
+        answer = str(input(prompt))
+        if answer not in yeslist and answer not in nolist:
             print("Please make sure you enter Y/N.\n")
+            continue
+        else:
+            break
     return answer
 
 #defines what start means
 def start():
     #asks the user if they would like to run the program
-    run = str(get_yesno("\n\nWould you like to run the program?[Y/N]\n>>> "))
+    run = str(get_yesno("Would you like to run the program?[Y/N]\n>>> "))
     #creates a loop so that as long as the user answers incorrectly to the question they will be asked again til a correct answer is provided
     while True:
         #If the user answers one of the answers in the list I created with accetable 'no' answers it will run this
         if run.lower() in nolist:
             print("Closing program")
             sys.exit()
-        #If the user answers with an acceptable 'yes answer from the yeslist then the loop will be stopped
-        elif run.lower() in yeslist:
-            break
-        #continues the loop if an answer outside of the accepted yes or no answers are given
+        #If the user answers with an acceptable 'yes answer from the yeslist then the loop will be stop
         else:
-            print("Invalid input. Please enter Y/N ")
-            run = input(">>> ")
-            continue
+            break
+
 
 
 #Defines the delivery function which asks the user about the method of picking up the pizza they want
 def delivery():
     global price
-    global yeslist
     #Asks the user if they want pickup or delivery then stores their answer in order_type
     order_type = str(get_int("\nWould you like to recieve your order via Pick up [1] or delivery [2]\n>>> "))
     #confirms the address is correct with a while loop so when it is incorrect the loop will repeat
@@ -63,19 +59,11 @@ def delivery():
             price += 3
             print("\n\nOption 2 picked - delivery.")
             address = str(input("\nWhat is the customers address? \n>>> "))
-            while True:
-                correct = str(input("\nIs this the correct address?[Y/N]]\n[{}]\n>>> ".format(address)))
-                if correct.lower() in yeslist:
-                    break
-                else:
-                    address = str(input("What is the customers address? \n>>> "))
-                    continue
-            if correct.lower() not in yeslist: #FIX#nolist
-                print("Please enter the correct address")
-                continue
-            else:
-                print("\nContinuing with your order")
+            correct = str(get_yesno("\nIs this the correct address?[Y/N]]\n[{}]\n>>> ".format(address)))
+            if correct.lower() in yeslist:
                 break
+            else:
+                continue
         elif order_type == "1":
             print("Option 1 picked - pick up.\n")
             break
@@ -86,30 +74,22 @@ def delivery():
 
 #Defines the function 'name' which stores the users name and makes sure that it is correct using a loop
 def name():
-    global yeslist
-    global nolist
-    name = str(input("What is the customers name?\n>>> "))
     while True:
-        correct = str(input("\nIs this the correct Name?[Y/N]\n[{}]\n>>> ".format(name)))
+        name = str(input("What is the customers name?\n>>> "))
+        correct = str(get_yesno("\nIs this the correct Name?[Y/N]\n[{}]\n>>> ".format(name)))
         if correct.lower() in yeslist:
             break
-        elif correct.lower() in nolist:
-            name = str(input("What is the customers Name? \n>>> "))
+        else:
             continue
 
 #Defines the function 'phone' which stores the users name and makes sure that it is correct using a loop
 def phone():
-    phone_num = str(get_int("What is the customers phone number?\n>>> "))
     while True:
-        correct = str(input("\nIs this the correct Phone number?[Y/N]\n[{}]\n>>> ".format(phone_num)))
+        phone_num = str(get_int("\nWhat is the customers phone number?\n>>> "))
+        correct = str(get_yesno("\nIs this the correct Phone number?[Y/N]\n[{}]\n>>> ".format(phone_num)))
         if correct.lower() in yeslist:
             break
-        elif correct.lower() in nolist:
-            phone_num = str(get_int("What is the customers Phone number? \n>>> "))
-            continue
         else:
-            print("That is not a valid answer, please try again and make sure to enter Y/N \n")
-            phone_num = str(get_int("What is the customers Phone number? \n>>> "))  
             continue
 
         
@@ -168,14 +148,9 @@ def p_function():
 
 def toppings():
     global price
-    global topping_choice
-    global p_topping
-    global toppingslist
-    global pizzalist
-    global p_amount
     global success
     success = False
-    p_topping = input("Would you like extra toppings for this pizza?[Y/N]\n>>> ")
+    p_topping = str(get_yesno("Would you like extra toppings for this pizza?[Y/N]\n>>> "))
     if p_topping.lower() in yeslist:
         print("""Extra toppings are 50 cents and the choices are below.
 [1] Jalapenos                        |      [4] Mushroom
@@ -193,8 +168,6 @@ def toppings():
                 continue
     elif p_topping.lower() in nolist:
         print("Ok!")
-    else:
-        p_topping = input("Sorry that is not a valid answer. Please enter [Y/N] below\n>>>")
     #adds to the users total order and displays it
     order.append(p_amount)
     order.append(pizzalist[p_order - 1])
@@ -223,16 +196,13 @@ def pizza_order():
             break
         else:
             if p_amount < 5:
-                p_cont = input("Would you like to order another pizza?[Y/N]\n>>> ")
+                p_cont = str(get_yesno("Would you like to order another pizza?[Y/N]\n>>> "))
                 if p_cont in yeslist:
                     p_function()
                     continue
-                elif p_cont in nolist:
+                else:
                     finalise()
                     break
-                else:
-                    print("Invalid input, please try again.")
-                    continue
             else:
                 finalise()
                 break
@@ -265,17 +235,14 @@ def restart():
     global price
     global order
     global success
-    run = input("\n\nWould you like to restart the program?[Y/N]\n>>> ")
+    run = get_yesno("\n\nWould you like to restart the program?[Y/N]\n>>> ")
     while True:
         if run.lower() in nolist:
             print("Closing program")
             sys.exit()
-        elif run.lower() in yeslist:
-            break
         else:
-            print("Invalid input. Please enter Y/N ")
-            run = input(">>> ")
-            continue
+            break
+
     price = 0
     order.clear()
     success = False
