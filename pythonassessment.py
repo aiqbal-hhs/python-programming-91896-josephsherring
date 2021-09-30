@@ -5,7 +5,6 @@ nolist = ["no,", "n"]
 #sets the price and pizza orders to 0
 price = 0
 p_max = 0
-p_check = 0
 #List of all the pizzas and toppings to call back to later
 pizzalist = ("Cheese", "Cheesy Garlic", "pepperoni", "Hawaiian", "Ham and Cheese", "Bacon", "Classic Veggie", "Margherita", "Meat lovers", "Loaded Hawaiian", "Loaded Pepperoni", "Supreme")
 toppingslist =  ("With Jalapenos", "With Olives", "With Pineapples", "With Mushrooms", "With Extra Cheese", "With Ham")
@@ -107,9 +106,9 @@ def phone():
 #Defines the p_function function which handles the ordering of the pizzas
 def p_function():
     global p_max
-    global p_check
     global p_amount
     global price
+    global p_order
     #shows the user the different options for pizzas and the costs
     print("""\nClassic pizza options: Cost - $8.50 |      Gourmet pizza options: Cost - $13.50
 [1] Cheese                           |    [8] Margherita
@@ -123,29 +122,43 @@ def p_function():
     #asks the user what pizza they want
     p_order = int(get_int("Please select the corresponding number to the pizza you want\n>>>"))
     #makes sure that the order is between 1 and 12 so that the code does not break
-    while True:
-        if p_order > 12:
-            print("We do not have a pizza associated with that number, please enter a number between 1 and 12")
-            p_order = int(get_int("Please select the corresponding number to the pizza you want\n>>>"))
-            continue
-        elif p_order < 1:
-            print("We do not have a pizza associated with that number, please enter a number between 1 and 12")
-            p_order = int(get_int("Please select the corresponding number to the pizza you want\n>>>"))
-            continue
-        elif p_order >= 1 and p_order <= 7:
-            price += 8.50
-            break
-        elif p_order >= 8 and p_order <= 12:
-            price += 13.50
-            break
-        else:
-            break
     p_amount = int(get_int("How many {} pizzas do you want [max 5]\n>>>".format(pizzalist[p_order - 1])))
-    print("You have added {} {} pizzas ".format(p_amount, pizzalist[p_order - 1]))
-    if p_order >= 1 and p_order <= 7:
-        price += 8.50 * p_amount
-    elif p_order >= 8 and p_order <= 12:
-        price += 13.50 * p_amount
+    #Stops p_amount if more than 5 or less than 1
+    while True:
+        if p_amount > 5:
+            print("You can only have 5 pizzas sorry!")
+            p_order = int(get_int("Please select the corresponding number to the pizza you want\n>>>"))
+            continue
+        elif p_amount <= 0:
+            print("You can not pick a negative number of pizzas sorry!\n")
+            continue
+        else:
+            p_max += p_amount
+            while True:
+                if p_max >5:
+                    print("You cant have that many pizzas sorry")
+                    p_max -= p_amount
+                    p_order = int(get_int("enter the number next to the pizza you want\n>>>"))
+                    p_amount = int(get_int("how many of this pizza do you want"))
+                    p_max +=p_amount
+                    continue
+                else:
+                    print("You have added {} {} pizzas ".format(p_amount, pizzalist[p_order - 1]))
+                    if p_order >= 1 and p_order <= 7:
+                        price += 8.50 * p_amount
+                    else:
+                        price += 13.50 * p_amount
+                    toppings()
+                    break
+    
+
+def toppings():
+    global price
+    global topping_choice
+    global p_topping
+    global toppingslist
+    global pizzalist
+    global p_amount
     p_topping = input("Would you like extra toppings for this pizza?[y/n]\n>>> ")
     if p_topping.lower() in yeslist:
         print("""Extra toppings are 50 cents and the choices are below.
@@ -166,41 +179,66 @@ def p_function():
         print("Ok!")
     else:
         p_topping = input("Sorry that is not a valid answer. Please enter [y/n] below\n>>>")
-
-    p_check += p_amount
-    if p_check > 5:
-        print("You are only allowed to have a total of 5 pizzas, your order has been removed for that pizza.")
-        p_check -= p_amount
+    #adds to the users total order and displays it
+    order.append(p_amount)
+    order.append(pizzalist[p_order - 1])
+    if p_topping.lower() in yeslist:
+        order.append(toppingslist[topping_choice - 1])
     else:
-        p_max += p_check
-        order.append(p_amount)
-        order.append(pizzalist[p_order - 1])
-        if p_topping.lower() in yeslist:
-            order.append(toppingslist[topping_choice - 1])
-        else:
-            order.append("with no topping")
-        order.append(",")
-        print(*order, sep= " ")
-
+        order.append("with no toppings")
+    order.append(",")
+    print(*order, sep= " ")
         
 def pizza_order():
-    global p_check
     global p_max
+    global topping_choice
+    global p_topping
+    global p_order
     p_max = 0
-    p_check = 0
-    p_function()
     global p_amount
+    global price
+    print("""\nClassic pizza options: Cost - $8.50 |      Gourmet pizza options: Cost - $13.50
+[1] Cheese                           |    [8] Margherita
+[2] Cheesy Garlic                    |    [9] Meat Lovers
+[3] Pepperoni                        |    [10] Loaded Hawaiian
+[4] Hawaiian                         |    [11] Loaded pepperoni
+[5] Ham and Cheese                   |    [12] Supreme
+[6] Bacon                            |
+[7] Classic Veggie                   |
+\n""")
+    #asks the user what pizza they want
+    p_order = int(get_int("Please select the corresponding number to the pizza you want\n>>>"))
+    #makes sure that the order is between 1 and 12 so that the code does not break
+    p_amount = int(get_int("How many {} pizzas do you want [max 5]\n>>>".format(pizzalist[p_order - 1])))
+    #Stops p_amount if more than 5 or less than 1
     while True:
         if p_amount > 5:
             print("You can only have 5 pizzas sorry!")
             p_order = int(get_int("Please select the corresponding number to the pizza you want\n>>>"))
-            p_function()
             continue
         elif p_amount <= 0:
             print("You can not pick a negative number of pizzas sorry!\n")
-            p_function()
             continue
-        elif p_amount == 5:
+        else:
+            p_max += p_amount
+            while True:
+                if p_max >5:
+                    print("You cant have that many pizzas sorry")
+                    p_max -= p_amount
+                    p_order = int(get_int("enter the number next to the pizza you want\n>>>"))
+                    p_amount = int(get_int("how many of this pizza do you want"))
+                    p_max +=p_amount
+                    continue
+                else:
+                    print("You have added {} {} pizzas ".format(p_amount, pizzalist[p_order - 1]))
+                    if p_order >= 1 and p_order <= 7:
+                        price += 8.50 * p_amount
+                    else:
+                        price += 13.50 * p_amount
+                    toppings()
+                    break
+    while True:
+        if p_max == 5:
             print("you have reached the limit for pizzas")
             finalise()
             break
@@ -240,6 +278,7 @@ def receipt():
 
 def restart():
     global price
+    global order
     run = input("\n\nWould you like to restart the program?[y/n]\n>>> ")
     while True:
         if run.lower() in nolist:
@@ -252,6 +291,7 @@ def restart():
             run = input(">>> ")
             continue
     price = 0
+    order.clear()
     delivery()
     name()  
     phone()
