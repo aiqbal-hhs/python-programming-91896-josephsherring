@@ -4,6 +4,7 @@ yeslist = ["yea", "yes", "y", "yeah", "ok", "yep"]
 nolist = ["no", "n"]
 #Sets the price and pizza orders to 0
 price = 0
+price_total = 0
 p_max = 0
 success = False
 #List of all the pizzas and toppings to call back to later
@@ -11,7 +12,9 @@ pizzalist = ("Cheese", "Cheesy Garlic", "Pepperoni", "Hawaiian", "Ham and Cheese
 toppingslist =  ("With Jalapenos", "With Olives", "With Pineapples", "With Mushrooms", "With Extra Cheese", "With Ham")
 #Empty list which is added to create the order
 order = []
-
+details = []
+name_details = []
+delivery_details = []
 #Defines get_int so when inserted into the code it stops value errors from happening so the program runs smoother
 def get_int(prompt):
     while True:
@@ -51,21 +54,22 @@ def start():
 #Defines the delivery function which asks the user about the method of picking up the pizza they want
 def delivery():
     global price
+    global order_type
     #Asks the user if they want pickup or delivery then stores their answer in order_type
     order_type = str(get_int("\nWould you like to recieve your order via Pick up [1] or delivery [2]\n>>> "))
     #confirms the address is correct with a while loop so when it is incorrect the loop will repeat
     while True:
         if order_type == "2":
-            price += 3
-            print("\n\nOption 2 picked - delivery.")
+            print("\n\nOption 2 - delivery.")
             address = str(input("\nWhat is the customers address? \n>>> "))
             correct = str(get_yesno("\nIs this the correct address?[Y/N]]\n[{}]\n>>> ".format(address)))
             if correct.lower() in yeslist:
+                delivery_details.append("Address: " + address)
                 break
             else:
                 continue
         elif order_type == "1":
-            print("Option 1 picked - pick up.\n")
+            print("Option 1 - pick up.\n")
             break
         else:
             print("That is not a valid answer! please pick [1] for pick up or [2] for delivery below")
@@ -75,9 +79,12 @@ def delivery():
 #Defines the function 'name' which stores the users name and makes sure that it is correct using a loop
 def name():
     while True:
-        name = str(input("What is the customers name?\n>>> "))
+        name = str(input("\nWhat is the customers name?\n>>> "))
         correct = str(get_yesno("\nIs this the correct Name?[Y/N]\n[{}]\n>>> ".format(name)))
         if correct.lower() in yeslist:
+            name_details.append("Name: ")
+            name_details.append(name.title())
+            name_details.append(".")
             break
         else:
             continue
@@ -88,6 +95,8 @@ def phone():
         phone_num = str(get_int("\nWhat is the customers phone number?\n>>> "))
         correct = str(get_yesno("\nIs this the correct Phone number?[Y/N]\n[{}]\n>>> ".format(phone_num)))
         if correct.lower() in yeslist:
+            details.append("Phone number:")
+            details.append(phone_num.title())
             break
         else:
             continue
@@ -120,7 +129,7 @@ def p_function():
         if p_amount > 5 or p_amount <1:
             print("You can only have 5 pizzas sorry!")
             # p_order = int(get_int("Please select the corresponding number to the pizza you want\n>>>"))# #I commented out this#
-            p_amount = int(get_int("How many of this pizza do you want?\n>>>")) #I added this line#
+            p_amount = int(get_int("How many of this pizza do you want? You currently have room for {} more pizzas in your order \n>>>".format(5 - p_max)))
             continue
         #elif p_amount <= 0:
        #     print("You can not pick a negative number of pizzas sorry!\n")
@@ -129,7 +138,7 @@ def p_function():
             p_max += p_amount
             while True:
                 if p_max >5:
-                    print("You cant have that many pizzas sorry")
+                    print("You cannot have that many pizzas sorry. Max is 5.")
                     p_max -= p_amount
                     p_amount = int(get_int("How many of this pizza do you want?\n>>>"))
                     p_max +=p_amount
@@ -148,6 +157,7 @@ def p_function():
 
 def toppings():
     global price
+    global price_total
     global success
     success = False
     p_topping = str(get_yesno("Would you like extra toppings for this pizza?[Y/N]\n>>> "))
@@ -175,6 +185,10 @@ def toppings():
         order.append(toppingslist[topping_choice - 1])
     else:
         order.append("with no toppings")
+    order.append("$")
+    order.append(price)
+    price_total += price
+    price = 0
     order.append(",")
     print(*order, sep= " ")
     success = True
@@ -191,7 +205,7 @@ def pizza_order():
     p_function()
     while True:
         if p_max == 5:
-            print("You have reached the limit for pizzas.")
+            print("You have reached the limit for pizzas (max 5).")
             finalise()
             break
         else:
@@ -213,7 +227,7 @@ def finalise():
     cancel = str(input("Would you like to finalise the order[F] or cancel[C]? (cancelling will bring you back to the start of the program)\n"))
     while True:
         if cancel.lower() == "f":
-            print("Thank you for using this program, a receipt will be printed below.")
+            print("Thank you for using this program, a receipt will be printed below.\n\n")
             break
         elif cancel.lower() == "c":
             print("Your order has been cancelled.")
@@ -225,10 +239,25 @@ def finalise():
 
 
 def receipt():
+    global order_type
+    global price_total
     #include customer name with a full stop at the end. Must be at the start and first letter of each name must be a capital.
     # if for delivery, need to include the delivery address
+    # print(*order, sep= " ")
+    # print(price)
+    # for x in range(len(order)):
+    #     print(order[x])
+    print("Thank you for shopping at Henderson Pizza palace.")
+    print(*name_details, sep= "")
     print(*order, sep= " ")
-    print(price)
+    if order_type == "2":
+        print("Delivery cost: $3")
+        print(*details, sep= " ")
+        print(*delivery_details, sep= " ")
+        price_total += 3
+    else:
+        print("Pickup: no extra cost")
+    print("Total order cost is ${}".format(price_total))
 
 
 def restart():
@@ -242,9 +271,11 @@ def restart():
             sys.exit()
         else:
             break
-
     price = 0
     order.clear()
+    name_details.clear()
+    details.clear()
+    delivery_details.clear()
     success = False
     delivery()
     name()  
