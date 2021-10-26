@@ -144,7 +144,7 @@ def p_function():
     while True and not success:
         #Stops p_amount if more than 5 or less than 1
         if p_amount > 5 or p_amount <1:
-            print("You can only have 5 pizzas sorry!")
+            print("You can only have 5 pizzas sorry! Your input has been cancelled, please re-enter an acceptable amount.")
             p_amount = int(get_int("How many of this pizza do you want? You currently have room for {} more pizzas in your order \n>>>".format(5 - p_max)))
             continue
         else:
